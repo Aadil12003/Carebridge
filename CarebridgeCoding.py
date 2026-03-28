@@ -15,23 +15,649 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from io import BytesIO
 import pandas as pd
 
-st.set_page_config(page_title="CareBridge PDx Tool", layout="wide")
+# Premium Dark Theme Configuration
+st.set_page_config(
+    page_title="CareBridge AI | Clinical Intelligence Platform",
+    page_icon="🏥",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
+# Premium CSS with Glassmorphism, Animations, and Modern Design
 st.markdown("""
 <style>
-.result-card {background: #f8f9fa; border-left: 4px solid #0066cc; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.pdx-code {font-size: 32px; font-weight: 700; color: #0066cc;}
-.warning-card {background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.query-card {background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.secondary-card {background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.alert-card {background: #f8d7da; border-left: 4px solid #721c24; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.info-card {background: #d1ecf1; border-left: 4px solid #0c5460; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.confidence-high {background: #d4edda; border-left: 4px solid #28a745; padding: 10px; border-radius: 5px; margin: 5px 0; font-weight: 700;}
-.confidence-medium {background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; border-radius: 5px; margin: 5px 0; font-weight: 700;}
-.confidence-low {background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px; border-radius: 5px; margin: 5px 0; font-weight: 700;}
-.section-header {font-size: 18px; font-weight: 600; color: #1a1a2e; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #0066cc; padding-bottom: 5px;}
-.correction-card {background: #e8f4fd; border-left: 4px solid #0066cc; padding: 15px; border-radius: 5px; margin: 10px 0;}
-.auto-correct {background: #fff3cd; border-left: 4px solid #ff6b35; padding: 10px; border-radius: 5px; margin: 10px 0; font-weight: 600;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --secondary: #ec4899;
+    --accent: #06b6d4;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg-dark: #0f172a;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --bg-glass: rgba(255, 255, 255, 0.03);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border: rgba(148, 163, 184, 0.1);
+    --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --glow: 0 0 40px rgba(99, 102, 241, 0.3);
+}
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+.stApp {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+    background-attachment: fixed;
+}
+
+/* Animated Background Particles */
+.stApp::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Glassmorphism Header */
+.main-header {
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.logo-text {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+}
+
+.tagline {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-top: 0.5rem;
+}
+
+/* Glass Cards */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow), var(--shadow);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.glass-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+    transition: left 0.5s;
+}
+
+.glass-card:hover::after {
+    left: 100%;
+}
+
+/* Section Headers */
+.section-header {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-header::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+}
+
+/* PDx Code Display */
+.pdx-display {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.pdx-display::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.pdx-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    position: relative;
+    z-index: 1;
+}
+
+.pdx-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Confidence Indicators */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.confidence-high {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.confidence-medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.confidence-low {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+/* Status Cards */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.status-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s;
+}
+
+.status-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.status-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.status-icon.info { background: rgba(6, 182, 212, 0.2); }
+.status-icon.success { background: rgba(16, 185, 129, 0.2); }
+.status-icon.warning { background: rgba(245, 158, 11, 0.2); }
+.status-icon.danger { background: rgba(239, 68, 68, 0.2); }
+
+.status-content {
+    flex: 1;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-value {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Alert Cards */
+.alert-card {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-card::before {
+    content: '⚠️';
+    font-size: 1.25rem;
+}
+
+.warning-card {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+.info-card {
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+.success-card {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+}
+
+/* Secondary Codes */
+.code-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.code-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.code-item:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateX(4px);
+}
+
+.code-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+}
+
+.code-details {
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.code-title {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.code-rationale {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Auto-correction Notice */
+.auto-correct {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Buttons */
+.stButton > button {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.875rem 1.5rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.025em !important;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+    transition: all 0.3s !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
+}
+
+.stButton > button:active {
+    transform: translateY(0) !important;
+}
+
+.stButton > button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* File Uploader */
+.stFileUploader {
+    background: var(--bg-glass);
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.stFileUploader:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    background: var(--bg-glass);
+    border-radius: 12px;
+    padding: 0.5rem;
+    gap: 0.5rem;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: transparent;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.stTabs [aria-selected="true"] {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* Expander */
+.streamlit-expanderHeader {
+    background: var(--bg-glass);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-weight: 500;
+}
+
+/* Text Areas */
+.stTextArea textarea {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+}
+
+.stTextArea textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Input Fields */
+.stTextInput input {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-primary);
+}
+
+/* Metrics */
+[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem !important;
+}
+
+/* Download Buttons */
+.stDownloadButton button {
+    background: var(--bg-glass) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s !important;
+}
+
+.stDownloadButton button:hover {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: var(--primary) !important;
+}
+
+/* Loading Spinner */
+.stSpinner > div {
+    border-color: var(--primary) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Hide Streamlit Elements */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Animation for new elements */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Query Cards */
+.query-card {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.query-card::before {
+    content: '🔍';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    opacity: 0.3;
+}
+
+/* Correction Form */
+.correction-form {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+/* History Items */
+.history-item {
+    background: var(--bg-glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.history-item:hover {
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+/* Comparison View */
+.comparison-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.comparison-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.comparison-card.highlight {
+    border-color: var(--primary);
+    box-shadow: var(--glow);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .logo-text { font-size: 1.75rem; }
+    .pdx-code { font-size: 2rem; }
+    .status-grid { grid-template-columns: 1fr; }
+    .comparison-grid { grid-template-columns: 1fr; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -114,7 +740,6 @@ def validate_pdx_result(result, clinical_text):
             result['confidence_score'] = 'High'
             corrections_made.append(f'Auto-corrected: {old_pdx} → I74.5 (aortoiliac level disease requires I74.x, not I70.2x)')
             
-            # Add the wrong code to alternative
             if result.get('pdx_alternative') in [None, 'None', '']:
                 result['pdx_alternative'] = old_pdx
     
@@ -128,14 +753,14 @@ def validate_pdx_result(result, clinical_text):
         corrections_made.append(f'CRITICAL: R-code {pdx} (symptom) suggested as PDx - symptoms cannot be primary unless no definitive diagnosis exists')
         result['confidence_score'] = 'Low'
     
-    # Rule 4: History codes (Z86-Z87, Z91.4-) cannot be PDx
+    # Rule 4: History codes cannot be PDx
     if pdx.startswith('Z86') or pdx.startswith('Z87') or 'history' in pdx_desc.lower():
         corrections_made.append(f'CRITICAL: History code {pdx} suggested as PDx - history codes cannot be primary')
         result['confidence_score'] = 'Low'
     
     # Rule 5: Bilateral vs unilateral check
     if 'bilateral' in text_lower or 'right and left' in text_lower:
-        if pdx.endswith('1') or pdx.endswith('2'):  # Right or left specific
+        if pdx.endswith('1') or pdx.endswith('2'):
             corrections_made.append(f'WARNING: Unilateral code {pdx} used but documentation suggests bilateral disease - consider unspecified or bilateral code')
     
     # Rule 6: Post-operative status without complication
@@ -143,16 +768,10 @@ def validate_pdx_result(result, clinical_text):
         if pdx.startswith('Z98'):
             corrections_made.append(f'WARNING: Z98.x (post-procedural status) as PDx - code the condition that required surgery, not the post-op status')
     
-    # Rule 7: Acute vs Chronic heart failure specificity
-    if pdx in ['I50.9', 'I50.20', 'I50.30', 'I50.40']:
-        if 'acute' in text_lower and 'chronic' in text_lower:
-            corrections_made.append(f'TIP: Consider acute on chronic HF code (3rd character = 3) instead of {pdx}')
-    
     # Add corrections to warnings
     if corrections_made:
         result['coding_warnings'] = result.get('coding_warnings', []) + corrections_made
     
-    # Ensure confidence is valid
     if result.get('confidence_score') not in ['High', 'Medium', 'Low']:
         result['confidence_score'] = 'Medium'
     
@@ -160,8 +779,6 @@ def validate_pdx_result(result, clinical_text):
 
 def analyze_clinical_notes(clinical_text):
     corrections_context = build_corrections_context()
-    
-    # Escape clinical text to prevent JSON issues
     safe_text = clinical_text.replace("\\", "\\\\").replace('"', '\\"')
 
     prompt = f"""You are an expert Home Health ICD-10-CM Coding Specialist for OASIS and 485 coding with deep knowledge of PDGM payment model and all CMS guidelines.
@@ -280,22 +897,14 @@ Return ONLY valid JSON starting with open brace and ending with close brace. No 
 
     try:
         raw = call_api(prompt)
-        
-        # Clean response
         cleaned = re.sub(r'```json|```', '', raw).strip()
-        
-        # Extract JSON
         start = cleaned.find('{')
         end = cleaned.rfind('}') + 1
         if start == -1 or end <= start:
             raise Exception("No valid JSON found in response")
         
         cleaned = cleaned[start:end]
-        
-        # Parse JSON
         result = json.loads(cleaned)
-        
-        # Post-processing validation with clinical logic
         result = validate_pdx_result(result, clinical_text)
         
         return result
@@ -423,16 +1032,99 @@ def generate_pdf_report(result):
     return buffer
 
 def render_results(result):
-    # Display auto-correction notice if present
     warnings = result.get('coding_warnings', [])
     auto_corrected = [w for w in warnings if 'Auto-corrected' in w or 'auto-corrected' in w.lower()]
-    if auto_corrected:
-        st.markdown('<div class="auto-correct">⚠️ ' + auto_corrected[0] + '</div>', unsafe_allow_html=True)
     
+    # Auto-correction banner
+    if auto_corrected:
+        st.markdown(f'<div class="auto-correct">⚡ {auto_corrected[0]}</div>', unsafe_allow_html=True)
+    
+    # Confidence badge
     conf = result.get('confidence_score', 'Medium')
-    conf_class = 'confidence-high' if conf == 'High' else 'confidence-low' if conf == 'Low' else 'confidence-medium'
-    st.markdown(f'<div class="{conf_class}">Confidence: {conf} — {result.get("confidence_reason", "")}</div>', unsafe_allow_html=True)
-
+    conf_class = f'confidence-{conf.lower()}'
+    st.markdown(f'<div style="text-align: center; margin-bottom: 1.5rem;"><span class="confidence-badge {conf_class}">● {conf} Confidence</span></div>', unsafe_allow_html=True)
+    
+    # PDx Display
+    st.markdown(f'''
+        <div class="pdx-display animate-in">
+            <div class="pdx-code">{result.get("pdx_code", "—")}</div>
+            <div class="pdx-description">{result.get("pdx_description", "")}</div>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+    # Rationale
+    with st.expander("View Rationale", expanded=True):
+        st.markdown(f'<div class="info-card">{result.get("pdx_rationale", "No rationale provided")}</div>', unsafe_allow_html=True)
+    
+    # Alternative PDx
+    if result.get("pdx_alternative") and result.get("pdx_alternative") != "None":
+        st.markdown(f'<div class="warning-card"><strong>Alternative Consideration:</strong> {result.get("pdx_alternative")}</div>', unsafe_allow_html=True)
+    
+    # Patient Info Grid
+    st.markdown('<div class="section-header">👤 Patient Information</div>', unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon info">👤</div>
+                <div class="status-content">
+                    <div class="status-label">Patient</div>
+                    <div class="status-value">{result.get("patient_name", "Not found")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon info">🎂</div>
+                <div class="status-content">
+                    <div class="status-label">DOB / Age</div>
+                    <div class="status-value">{result.get("patient_dob", "—")} ({result.get("patient_age", "—")})</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon success">🏥</div>
+                <div class="status-content">
+                    <div class="status-label">Admission</div>
+                    <div class="status-value">{result.get("admission_date", "—")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon success">✅</div>
+                <div class="status-content">
+                    <div class="status-label">Discharge</div>
+                    <div class="status-value">{result.get("discharge_date", "—")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+    
+    with col3:
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon warning">📋</div>
+                <div class="status-content">
+                    <div class="status-label">F2F Date</div>
+                    <div class="status-value">{result.get("face_to_face_date", "Not found")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="status-item">
+                <div class="status-icon info">👨‍⚕️</div>
+                <div class="status-content">
+                    <div class="status-label">Attending</div>
+                    <div class="status-value">{result.get("attending_physician", "—")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+    
+    # OASIS Alerts
     oasis = result.get('oasis_alerts', {})
     missing_flags = []
     if oasis.get('face_to_face_missing') == 'Yes':
@@ -441,105 +1133,160 @@ def render_results(result):
         missing_flags.append("Homebound status not sufficiently documented")
     if result.get('face_to_face_date') == 'Not found':
         missing_flags.append("Face to face date not found in document")
+    
     if missing_flags:
-        st.markdown('<div class="section-header">OASIS Compliance Alerts</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">🚨 OASIS Compliance Alerts</div>', unsafe_allow_html=True)
         for flag in missing_flags:
-            st.markdown(f'<div class="alert-card">ALERT: {flag}</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="section-header">Patient Information</div>', unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown(f"**Patient:** {result.get('patient_name', 'Not found')}")
-        st.markdown(f"**DOB:** {result.get('patient_dob', 'Not found')}")
-        st.markdown(f"**Age/Gender:** {result.get('patient_age', '')} {result.get('patient_gender', '')}")
-    with c2:
-        st.markdown(f"**Admission:** {result.get('admission_date', 'Not found')}")
-        st.markdown(f"**Discharge:** {result.get('discharge_date', 'Not found')}")
-        st.markdown(f"**F2F Date:** {result.get('face_to_face_date', 'Not found')}")
-    st.markdown(f"**Attending:** {result.get('attending_physician', 'Not found')}")
-    st.markdown(f"**Referring:** {result.get('referring_physician', 'Not found')}")
-    st.markdown(f"**Qualifying Event:** {result.get('qualifying_event', 'Not found')}")
-    st.markdown(f"**Homebound:** {result.get('homebound_status', 'Not documented')}")
-
-    st.markdown("---")
-    st.markdown('<div class="section-header">Primary Diagnosis</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><span class="pdx-code">{result.get("pdx_code", "")}</span><br><strong>{result.get("pdx_description", "")}</strong><br><br>{result.get("pdx_rationale", "")}</div>', unsafe_allow_html=True)
-
-    if result.get("pdx_alternative") and result.get("pdx_alternative") != "None":
-        st.markdown(f'<div class="warning-card">Alternative PDx: {result.get("pdx_alternative")}</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="section-header">Change in Condition</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="info-card">{result.get("change_in_condition", "Not documented")}</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="section-header">Secondary Diagnoses</div>', unsafe_allow_html=True)
-    for code in result.get("secondary_codes", []):
-        st.markdown(f'<div class="secondary-card"><strong>{code.get("code", "")}</strong> — {code.get("description", "")}<br><small>{code.get("rationale", "")}</small></div>', unsafe_allow_html=True)
-
+            st.markdown(f'<div class="alert-card">{flag}</div>', unsafe_allow_html=True)
+    
+    # Change in Condition
+    st.markdown('<div class="section-header">📈 Change in Condition</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="glass-card">{result.get("change_in_condition", "Not documented")}</div>', unsafe_allow_html=True)
+    
+    # Secondary Codes
+    st.markdown('<div class="section-header">📋 Secondary Diagnoses</div>', unsafe_allow_html=True)
+    secondary = result.get("secondary_codes", [])
+    if secondary:
+        for code in secondary:
+            st.markdown(f'''
+                <div class="code-item">
+                    <span class="code-number">{code.get("code", "")}</span>
+                    <div class="code-details">
+                        <div class="code-title">{code.get("description", "")}</div>
+                        <div class="code-rationale">{code.get("rationale", "")}</div>
+                    </div>
+                </div>
+            ''', unsafe_allow_html=True)
+    else:
+        st.info("No secondary codes identified")
+    
+    # PDGM Considerations
     pdgm = result.get("pdgm_considerations", {})
     if pdgm:
-        st.markdown('<div class="section-header">PDGM Considerations</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="result-card"><strong>Clinical Group:</strong> {pdgm.get("clinical_group", "")}<br><strong>Comorbidity Adjustment:</strong> {pdgm.get("comorbidity_adjustment", "")}<br><strong>High Value Codes:</strong> {pdgm.get("high_value_codes", "")}<br><strong>Functional Impairment:</strong> {pdgm.get("functional_impairment", "")}</div>', unsafe_allow_html=True)
-
+        st.markdown('<div class="section-header">💰 PDGM Considerations</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="glass-card">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div><strong>Clinical Group:</strong> {pdgm.get("clinical_group", "—")}</div>
+                    <div><strong>Comorbidity Adjustment:</strong> {pdgm.get("comorbidity_adjustment", "—")}</div>
+                    <div><strong>Functional Impairment:</strong> {pdgm.get("functional_impairment", "—")}</div>
+                    <div><strong>High Value Codes:</strong> {pdgm.get("high_value_codes", "—")}</div>
+                </div>
+            </div>
+        ''', unsafe_allow_html=True)
+    
+    # Physician Queries
     queries = result.get("queries_needed", [])
     if queries:
-        st.markdown('<div class="section-header">Physician Queries Needed</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">❓ Physician Queries Needed</div>', unsafe_allow_html=True)
         for query in queries:
             st.markdown(f'<div class="query-card">{query}</div>', unsafe_allow_html=True)
-
+    
     query_letters = result.get("physician_query_letters", [])
     if query_letters:
-        st.markdown('<div class="section-header">Physician Query Letters</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">✉️ Query Letters</div>', unsafe_allow_html=True)
         for letter in query_letters:
-            with st.expander(f"Query: {letter.get('query_topic', '')}"):
+            with st.expander(f"{letter.get('query_topic', 'Query')}"):
                 st.text_area("Ready to send", letter.get("query_letter", ""), height=200, key=f"letter_{letter.get('query_topic', '')}")
-
-    wound = result.get("wound_care", {})
-    if wound.get("present") == "Yes":
-        st.markdown('<div class="section-header">Wound Care</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="result-card"><strong>Type:</strong> {wound.get("wound_type", "")}<br><strong>Location:</strong> {wound.get("location", "")}<br><strong>Stage:</strong> {wound.get("stage", "")}<br><strong>Size:</strong> {wound.get("size", "")}<br><strong>Details:</strong> {wound.get("details", "")}<br><strong>Skilled Need:</strong> {wound.get("skilled_need", "")}<br><strong>OASIS Item:</strong> {wound.get("oasis_item", "")}</div>', unsafe_allow_html=True)
-
-    lab = result.get("lab_draw", {})
-    if lab.get("present") == "Yes":
-        st.markdown('<div class="section-header">Lab Draw</div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="result-card"><strong>Labs:</strong> {lab.get("details", "")}<br><strong>High Risk Monitoring:</strong> {lab.get("high_risk_monitoring", "")}</div>', unsafe_allow_html=True)
-
-    meds = result.get("medications", {})
-    st.markdown('<div class="section-header">Medications</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><strong>High Risk:</strong> {meds.get("high_risk", "None noted")}<br><strong>All Medications:</strong> {meds.get("all_medications", "See discharge summary")}<br><strong>Teaching Needed:</strong> {meds.get("medication_teaching_needed", "")}<br><strong>Reconciliation:</strong> {meds.get("reconciliation_needed", "")}</div>', unsafe_allow_html=True)
-
-    skilled = result.get("skilled_need", {})
-    st.markdown('<div class="section-header">Skilled Need</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><strong>Service:</strong> {skilled.get("service", "")}<br><strong>Rationale:</strong> {skilled.get("rationale", "")}<br><strong>Frequency:</strong> {skilled.get("frequency_suggestion", "")}</div>', unsafe_allow_html=True)
-
-    therapy = result.get("therapy_needs", {})
-    st.markdown('<div class="section-header">Therapy Assessment</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="result-card"><strong>PT:</strong> {therapy.get("pt_indicated", "")}<br><strong>OT:</strong> {therapy.get("ot_indicated", "")}<br><strong>ST:</strong> {therapy.get("st_indicated", "")}<br><strong>Goals:</strong> {therapy.get("therapy_goals", "")}</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="section-header">OASIS Alerts</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="alert-card"><strong>M1033 Risk:</strong> {oasis.get("m1033_hospitalization_risk", "")}<br><strong>M1240 Pain:</strong> {oasis.get("m1240_pain_assessment", "")}<br><strong>M1910 Fall Risk:</strong> {oasis.get("m1910_fall_risk", "")}<br><strong>Mental Health:</strong> {oasis.get("mental_health_flags", "")}<br><strong>Cardiac Rehab:</strong> {oasis.get("cardiac_rehab_indicated", "")}<br><strong>Diabetic Foot:</strong> {oasis.get("diabetic_foot_care", "")}<br><strong>Pressure Ulcer Risk:</strong> {oasis.get("pressure_ulcer_risk", "")}<br><strong>M1800 Grooming:</strong> {oasis.get("m1800_grooming", "")}</div>', unsafe_allow_html=True)
-
+    
+    # Clinical Details
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Wound Care
+        wound = result.get("wound_care", {})
+        if wound.get("present") == "Yes":
+            st.markdown('<div class="section-header">🩹 Wound Care</div>', unsafe_allow_html=True)
+            st.markdown(f'''
+                <div class="glass-card">
+                    <p><strong>Type:</strong> {wound.get("wound_type", "—")}</p>
+                    <p><strong>Location:</strong> {wound.get("location", "—")}</p>
+                    <p><strong>Stage:</strong> {wound.get("stage", "—")}</p>
+                    <p><strong>Size:</strong> {wound.get("size", "—")}</p>
+                    <p><strong>OASIS:</strong> {wound.get("oasis_item", "—")}</p>
+                </div>
+            ''', unsafe_allow_html=True)
+        
+        # Medications
+        meds = result.get("medications", {})
+        st.markdown('<div class="section-header">💊 Medications</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="glass-card">
+                <p><strong>High Risk:</strong> {meds.get("high_risk", "None noted")}</p>
+                <p><strong>Teaching Needed:</strong> {meds.get("medication_teaching_needed", "—")}</p>
+                <p><strong>Reconciliation:</strong> {meds.get("reconciliation_needed", "—")}</p>
+            </div>
+        ''', unsafe_allow_html=True)
+    
+    with col2:
+        # Skilled Need
+        skilled = result.get("skilled_need", {})
+        st.markdown('<div class="section-header">🏥 Skilled Need</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="glass-card">
+                <p><strong>Service:</strong> {skilled.get("service", "—")}</p>
+                <p><strong>Frequency:</strong> {skilled.get("frequency_suggestion", "—")}</p>
+                <p><strong>Rationale:</strong> {skilled.get("rationale", "—")}</p>
+            </div>
+        ''', unsafe_allow_html=True)
+        
+        # Therapy
+        therapy = result.get("therapy_needs", {})
+        st.markdown('<div class="section-header">🏃 Therapy</div>', unsafe_allow_html=True)
+        st.markdown(f'''
+            <div class="glass-card">
+                <p><strong>PT:</strong> {therapy.get("pt_indicated", "—")}</p>
+                <p><strong>OT:</strong> {therapy.get("ot_indicated", "—")}</p>
+                <p><strong>ST:</strong> {therapy.get("st_indicated", "—")}</p>
+            </div>
+        ''', unsafe_allow_html=True)
+        
+        # Lab Draw
+        lab = result.get("lab_draw", {})
+        if lab.get("present") == "Yes":
+            st.markdown('<div class="section-header">🧪 Lab Draw</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="glass-card">{lab.get("details", "—")}</div>', unsafe_allow_html=True)
+    
+    # OASIS Alerts Summary
+    st.markdown('<div class="section-header">📊 OASIS Assessment</div>', unsafe_allow_html=True)
+    st.markdown(f'''
+        <div class="glass-card">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div><strong>M1033 Risk:</strong> {oasis.get("m1033_hospitalization_risk", "—")}</div>
+                <div><strong>M1240 Pain:</strong> {oasis.get("m1240_pain_assessment", "—")}</div>
+                <div><strong>M1910 Fall Risk:</strong> {oasis.get("m1910_fall_risk", "—")}</div>
+                <div><strong>Mental Health:</strong> {oasis.get("mental_health_flags", "—")}</div>
+                <div><strong>Pressure Ulcer Risk:</strong> {oasis.get("pressure_ulcer_risk", "—")}</div>
+                <div><strong>M1800 Grooming:</strong> {oasis.get("m1800_grooming", "—")}</div>
+            </div>
+        </div>
+    ''', unsafe_allow_html=True)
+    
+    # Documentation Gaps
     doc_gaps = result.get("documentation_gaps", [])
     if doc_gaps:
-        st.markdown('<div class="section-header">Documentation Gaps</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">⚠️ Documentation Gaps</div>', unsafe_allow_html=True)
         for gap in doc_gaps:
             st.markdown(f'<div class="warning-card">{gap}</div>', unsafe_allow_html=True)
-
-    # Display coding warnings (excluding auto-corrected which was shown at top)
+    
+    # Other Warnings
     other_warnings = [w for w in warnings if 'Auto-corrected' not in w and 'auto-corrected' not in w.lower()]
     if other_warnings:
-        st.markdown('<div class="section-header">Coding Warnings</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">🚨 Coding Warnings</div>', unsafe_allow_html=True)
         for warning in other_warnings:
             st.markdown(f'<div class="alert-card">{warning}</div>', unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown('<div class="section-header">Feedback and Correction</div>', unsafe_allow_html=True)
-    st.markdown('<div class="correction-card">If any code above is wrong please correct it here so the tool learns for next time.</div>', unsafe_allow_html=True)
-
+    
+    # Correction Form
+    st.markdown('<div class="section-header">✏️ Submit Correction</div>', unsafe_allow_html=True)
+    st.markdown('<div class="correction-form">', unsafe_allow_html=True)
     with st.form(key="correction_form"):
-        wrong_code = st.text_input("Wrong code that was suggested", value=result.get('pdx_code', ''))
-        correct_code = st.text_input("Correct code it should be")
-        correction_context = st.text_area("Brief description of why (optional)", height=80)
-        submitted = st.form_submit_button("Submit Correction")
+        col1, col2 = st.columns(2)
+        with col1:
+            wrong_code = st.text_input("Suggested Code (Wrong)", value=result.get('pdx_code', ''))
+        with col2:
+            correct_code = st.text_input("Correct Code")
+        correction_context = st.text_area("Reason for Correction", height=100, placeholder="Explain why this correction is needed...")
+        submitted = st.form_submit_button("💾 Save Correction", use_container_width=True)
         if submitted and correct_code:
             correction = {
                 "wrong_code": wrong_code,
@@ -550,90 +1297,102 @@ def render_results(result):
                 "patient": result.get('patient_name', 'Unknown')
             }
             st.session_state.corrections.append(correction)
-            st.success(f"Correction saved. Tool will now use {correct_code} in similar cases.")
-
-    st.markdown("---")
+            st.success(f"✅ Correction saved! Tool will use {correct_code} for similar cases.")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Download Buttons
+    st.markdown('<div class="section-header">📥 Export Results</div>', unsafe_allow_html=True)
     col_dl1, col_dl2, col_dl3 = st.columns(3)
     with col_dl1:
         st.download_button(
-            label="Download JSON",
+            label="📄 Download JSON",
             data=json.dumps(result, indent=2),
             file_name=f"pdx_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-            mime="application/json"
+            mime="application/json",
+            use_container_width=True
         )
     with col_dl2:
         try:
             pdf_buffer = generate_pdf_report(result)
             st.download_button(
-                label="Download PDF Report",
+                label="📕 Download PDF",
                 data=pdf_buffer,
                 file_name=f"pdx_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                mime="application/pdf"
+                mime="application/pdf",
+                use_container_width=True
             )
         except Exception as e:
-            st.warning(f"PDF generation error: {str(e)}")
+            st.warning(f"PDF error: {str(e)}")
     with col_dl3:
-        if st.button("Add to Comparison"):
+        if st.button("➕ Add to Comparison", use_container_width=True):
             st.session_state.comparison_cases.append(result)
-            st.success("Added to comparison")
+            st.success("✅ Added to comparison")
 
-st.title("CareBridge Home Health PDx Tool")
-st.caption("Upload discharge summary or clinical notes and everything fills automatically")
-st.markdown("---")
+# Premium Header
+st.markdown('''
+    <div class="main-header animate-in">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 3rem;">🏥</div>
+            <div>
+                <div class="logo-text">CareBridge AI</div>
+                <div class="tagline">Intelligent Clinical Documentation & Coding Platform</div>
+            </div>
+        </div>
+    </div>
+''', unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["New Analysis", "Case History", "Compare Cases", "Monthly Report", "Help"])
+# Main Tabs with Premium Styling
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔄 New Analysis", "📚 Case History", "⚖️ Compare Cases", "📊 Analytics", "❓ Help"])
 
 with tab1:
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        st.subheader("Upload Documents")
-
-        st.markdown("**You can upload multiple documents**")
-        uploaded_pdfs = st.file_uploader("Upload PDF documents", type=["pdf"], accept_multiple_files=True)
-        uploaded_images = st.file_uploader("Upload images of documents", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
-        pasted_text = st.text_area("Or paste clinical notes here", height=200, placeholder="Paste discharge summary or progress notes here...")
-
-        if st.button("Try Voice Input"):
-            st.info("Voice input requires microphone access. Please type your notes or upload a document instead. Voice feature coming soon.")
-
+    col_input, col_output = st.columns([1, 1.2])
+    
+    with col_input:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">📤 Upload Clinical Documents</div>', unsafe_allow_html=True)
+        
+        uploaded_pdfs = st.file_uploader("PDF Documents", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
+        uploaded_images = st.file_uploader("Image Files", type=["jpg", "jpeg", "png"], accept_multiple_files=True, label_visibility="collapsed")
+        pasted_text = st.text_area("Or Paste Text Directly", height=150, placeholder="Paste discharge summary, progress notes, or clinical documentation here...")
+        
         all_text = ""
         if uploaded_pdfs:
             for pdf in uploaded_pdfs:
-                with st.spinner(f"Extracting {pdf.name}..."):
+                with st.spinner(f"Processing {pdf.name}..."):
                     extracted = extract_text_from_pdf(pdf)
-                    all_text += f"\n\n--- Document: {pdf.name} ---\n{extracted}"
-            st.success(f"{len(uploaded_pdfs)} PDF files extracted")
-
+                    all_text += f"\n\n--- {pdf.name} ---\n{extracted}"
+            st.success(f"✅ {len(uploaded_pdfs)} PDF(s) processed")
+        
         if uploaded_images:
             for img_file in uploaded_images:
-                image = Image.open(img_file)
-                st.image(image, caption=img_file.name, use_column_width=True)
+                st.image(img_file, use_column_width=True)
                 img_file.seek(0)
-                with st.spinner(f"Extracting text from {img_file.name}..."):
+                with st.spinner(f"OCR on {img_file.name}..."):
                     extracted = extract_text_from_image(img_file)
-                    all_text += f"\n\n--- Image: {img_file.name} ---\n{extracted}"
-            st.success(f"{len(uploaded_images)} images extracted")
-
+                    all_text += f"\n\n--- {img_file.name} ---\n{extracted}"
+            st.success(f"✅ {len(uploaded_images)} image(s) processed")
+        
         if pasted_text:
-            all_text += f"\n\n--- Pasted Notes ---\n{pasted_text}"
-
+            all_text += f"\n\n--- Direct Input ---\n{pasted_text}"
+        
         if all_text:
-            with st.expander("View all extracted text"):
-                st.text(all_text[:3000])
-
+            with st.expander("🔍 Preview Extracted Text"):
+                st.text(all_text[:2000] + ("..." if len(all_text) > 2000 else ""))
+        
         analyze_button = st.button(
-            "Analyze All Documents and Generate Codes",
+            "🚀 Analyze with AI",
             type="primary",
             use_container_width=True,
             disabled=not bool(all_text)
         )
-
-    with col2:
-        st.subheader("Analysis Results")
-
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with col_output:
+        st.markdown('<div class="glass-card" style="min-height: 600px;">', unsafe_allow_html=True)
+        st.markdown('<div class="section-header">🎯 Analysis Results</div>', unsafe_allow_html=True)
+        
         if analyze_button and all_text:
-            with st.spinner("Analyzing all documents — please wait 20 to 30 seconds..."):
+            with st.spinner("🧠 AI analyzing clinical documentation..."):
                 try:
                     result = analyze_clinical_notes(all_text)
                     result["analyzed_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -641,32 +1400,39 @@ with tab1:
                     st.session_state.history.append(result)
                     render_results(result)
                 except Exception as e:
-                    st.error(f"Analysis failed: {str(e)}")
-                    st.info("Please check your document and try again")
-
+                    st.error(f"❌ Analysis failed: {str(e)}")
+                    st.info("Please check your API key and try again")
+        
         elif st.session_state.current_result:
             render_results(st.session_state.current_result)
         else:
-            st.info("Upload documents or paste clinical notes on the left to begin")
+            st.markdown('''
+                <div style="text-align: center; padding: 4rem 2rem; color: #64748b;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
+                    <h3>Ready to Analyze</h3>
+                    <p>Upload documents or paste clinical notes to begin AI-powered coding analysis</p>
+                </div>
+            ''', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
-    st.subheader("Case History")
-
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">📚 Case History & Analytics</div>', unsafe_allow_html=True)
+    
     if not st.session_state.history:
-        st.info("No cases analyzed yet.")
+        st.info("No cases analyzed yet. Start by analyzing a new case.")
     else:
-        search_term = st.text_input("Search by patient name, diagnosis, or date", placeholder="Type to search...")
-
+        search_term = st.text_input("🔍 Search cases...", placeholder="Patient name, diagnosis code, or date...")
+        
         filtered = st.session_state.history
         if search_term:
             filtered = [c for c in st.session_state.history if
                 search_term.lower() in c.get('patient_name', '').lower() or
                 search_term.lower() in c.get('pdx_code', '').lower() or
-                search_term.lower() in c.get('pdx_description', '').lower() or
                 search_term.lower() in c.get('analyzed_at', '').lower()]
-
-        st.markdown(f"**Showing {len(filtered)} of {len(st.session_state.history)} cases**")
-
+        
+        st.markdown(f'<p style="color: #64748b; margin-bottom: 1rem;">Showing {len(filtered)} of {len(st.session_state.history)} cases</p>', unsafe_allow_html=True)
+        
         for i, case in enumerate(reversed(filtered)):
             with st.expander(f"{case.get('patient_name', 'Unknown')} — {case.get('pdx_code', '')} — {case.get('analyzed_at', '')}"):
                 c1, c2 = st.columns(2)
@@ -674,189 +1440,166 @@ with tab2:
                     st.markdown(f"**Patient:** {case.get('patient_name', '')}")
                     st.markdown(f"**DOB:** {case.get('patient_dob', '')}")
                     st.markdown(f"**Attending:** {case.get('attending_physician', '')}")
-                    st.markdown(f"**F2F Date:** {case.get('face_to_face_date', '')}")
                 with c2:
-                    st.markdown(f"**PDx:** {case.get('pdx_code', '')} — {case.get('pdx_description', '')}")
-                    st.markdown(f"**Qualifying Event:** {case.get('qualifying_event', '')}")
-                    st.markdown(f"**Skilled Need:** {case.get('skilled_need', {}).get('service', '')}")
+                    st.markdown(f"**PDx:** {case.get('pdx_code', '')}")
                     st.markdown(f"**Confidence:** {case.get('confidence_score', '')}")
-
+                    st.markdown(f"**Qualifying Event:** {case.get('qualifying_event', '')}")
+                
                 btn_col1, btn_col2 = st.columns(2)
                 with btn_col1:
-                    st.download_button(
-                        label="Download JSON",
-                        data=json.dumps(case, indent=2),
-                        file_name=f"case_{i}.json",
-                        mime="application/json",
-                        key=f"json_{i}"
-                    )
+                    st.download_button("📄 JSON", json.dumps(case, indent=2), f"case_{i}.json", "application/json", key=f"json_{i}")
                 with btn_col2:
                     try:
                         pdf_buf = generate_pdf_report(case)
-                        st.download_button(
-                            label="Download PDF",
-                            data=pdf_buf,
-                            file_name=f"case_{i}.pdf",
-                            mime="application/pdf",
-                            key=f"pdf_{i}"
-                        )
-                    except Exception:
+                        st.download_button("📕 PDF", pdf_buf, f"case_{i}.pdf", "application/pdf", key=f"pdf_{i}")
+                    except:
                         pass
-
+        
         if st.session_state.corrections:
             st.markdown("---")
-            st.markdown("**Correction History**")
-            for corr in st.session_state.corrections:
-                st.markdown(f"- {corr['date']}: Changed {corr['wrong_code']} to {corr['correct_code']} for {corr['patient']} — {corr['reason']}")
+            st.markdown("### 📝 Learning History")
+            for corr in st.session_state.corrections[-5:]:
+                st.markdown(f"- **{corr['date']}**: `{corr['wrong_code']}` → `{corr['correct_code']}` ({corr['patient']})")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with tab3:
-    st.subheader("Side by Side Case Comparison")
-
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">⚖️ Side-by-Side Case Comparison</div>', unsafe_allow_html=True)
+    
     if len(st.session_state.comparison_cases) < 2:
-        st.info("Add at least 2 cases to comparison using the Add to Comparison button in the analysis results.")
+        st.info("Add at least 2 cases to comparison from the analysis results.")
         if st.session_state.comparison_cases:
-            st.markdown(f"**{len(st.session_state.comparison_cases)} case added so far**")
+            st.markdown(f'<p>Currently have {len(st.session_state.comparison_cases)} case(s) queued</p>', unsafe_allow_html=True)
     else:
         case_a = st.session_state.comparison_cases[-2]
         case_b = st.session_state.comparison_cases[-1]
-
+        
         col_a, col_b = st.columns(2)
+        
         with col_a:
-            st.markdown(f"**Case A: {case_a.get('patient_name', 'Unknown')}**")
-            st.markdown(f"PDx: {case_a.get('pdx_code', '')} — {case_a.get('pdx_description', '')}")
-            st.markdown(f"Analyzed: {case_a.get('analyzed_at', '')}")
-            st.markdown(f"Confidence: {case_a.get('confidence_score', '')}")
-            st.markdown(f"Qualifying Event: {case_a.get('qualifying_event', '')}")
-            st.markdown(f"Skilled Need: {case_a.get('skilled_need', {}).get('service', '')}")
-            st.markdown("**Secondary Codes:**")
-            for code in case_a.get('secondary_codes', []):
-                st.markdown(f"- {code.get('code', '')} {code.get('description', '')}")
+            st.markdown(f'''
+                <div class="comparison-card">
+                    <h4>Case A: {case_a.get('patient_name', 'Unknown')}</h4>
+                    <div class="pdx-code" style="font-size: 1.5rem;">{case_a.get('pdx_code', '')}</div>
+                    <p>{case_a.get('pdx_description', '')}</p>
+                    <hr style="border-color: #334155; margin: 1rem 0;">
+                    <p><strong>Confidence:</strong> {case_a.get('confidence_score', '')}</p>
+                    <p><strong>Date:</strong> {case_a.get('analyzed_at', '')}</p>
+                    <p><strong>Event:</strong> {case_a.get('qualifying_event', '')}</p>
+                </div>
+            ''', unsafe_allow_html=True)
+        
         with col_b:
-            st.markdown(f"**Case B: {case_b.get('patient_name', 'Unknown')}**")
-            st.markdown(f"PDx: {case_b.get('pdx_code', '')} — {case_b.get('pdx_description', '')}")
-            st.markdown(f"Analyzed: {case_b.get('analyzed_at', '')}")
-            st.markdown(f"Confidence: {case_b.get('confidence_score', '')}")
-            st.markdown(f"Qualifying Event: {case_b.get('qualifying_event', '')}")
-            st.markdown(f"Skilled Need: {case_b.get('skilled_need', {}).get('service', '')}")
-            st.markdown("**Secondary Codes:**")
-            for code in case_b.get('secondary_codes', []):
-                st.markdown(f"- {code.get('code', '')} {code.get('description', '')}")
-
-        if st.button("Clear Comparison"):
+            st.markdown(f'''
+                <div class="comparison-card highlight">
+                    <h4>Case B: {case_b.get('patient_name', 'Unknown')}</h4>
+                    <div class="pdx-code" style="font-size: 1.5rem;">{case_b.get('pdx_code', '')}</div>
+                    <p>{case_b.get('pdx_description', '')}</p>
+                    <hr style="border-color: #334155; margin: 1rem 0;">
+                    <p><strong>Confidence:</strong> {case_b.get('confidence_score', '')}</p>
+                    <p><strong>Date:</strong> {case_b.get('analyzed_at', '')}</p>
+                    <p><strong>Event:</strong> {case_b.get('qualifying_event', '')}</p>
+                </div>
+            ''', unsafe_allow_html=True)
+        
+        if st.button("🗑️ Clear Comparison", use_container_width=True):
             st.session_state.comparison_cases = []
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with tab4:
-    st.subheader("Monthly Report")
-
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">📊 Monthly Analytics Dashboard</div>', unsafe_allow_html=True)
+    
     if not st.session_state.history:
-        st.info("No cases analyzed yet. Analyze some patients first.")
+        st.info("No data available. Analyze cases to generate analytics.")
     else:
-        st.markdown(f"**Total cases this session: {len(st.session_state.history)}**")
-
-        pdx_counts = {}
-        confidence_counts = {"High": 0, "Medium": 0, "Low": 0}
-        skilled_counts = {}
-        physicians = {}
-
-        for case in st.session_state.history:
-            pdx = case.get('pdx_code', 'Unknown')
-            pdx_counts[pdx] = pdx_counts.get(pdx, 0) + 1
-
-            conf = case.get('confidence_score', 'Medium')
-            confidence_counts[conf] = confidence_counts.get(conf, 0) + 1
-
-            skilled = case.get('skilled_need', {}).get('service', 'Unknown')
-            skilled_counts[skilled] = skilled_counts.get(skilled, 0) + 1
-
-            physician = case.get('attending_physician', 'Unknown')
-            physicians[physician] = physicians.get(physician, 0) + 1
-
-        col1, col2, col3 = st.columns(3)
+        # Metrics
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Total Cases", len(st.session_state.history))
         with col2:
-            st.metric("High Confidence", confidence_counts.get("High", 0))
+            high_conf = sum(1 for c in st.session_state.history if c.get('confidence_score') == 'High')
+            st.metric("High Confidence", f"{high_conf} ({high_conf/len(st.session_state.history)*100:.0f}%)")
         with col3:
-            st.metric("Corrections Made", len(st.session_state.corrections))
-
-        st.markdown("**Most Common PDx Codes**")
-        sorted_pdx = sorted(pdx_counts.items(), key=lambda x: x[1], reverse=True)
-        for code, count in sorted_pdx[:10]:
-            st.markdown(f"- {code}: {count} cases")
-
-        st.markdown("**Skilled Service Distribution**")
-        for service, count in skilled_counts.items():
-            st.markdown(f"- {service}: {count} cases")
-
-        st.markdown("**Confidence Score Distribution**")
-        for level, count in confidence_counts.items():
-            st.markdown(f"- {level}: {count} cases")
-
-        st.markdown("**Cases by Physician**")
-        for physician, count in sorted(physicians.items(), key=lambda x: x[1], reverse=True):
-            st.markdown(f"- {physician}: {count} cases")
-
+            st.metric("Corrections", len(st.session_state.corrections))
+        with col4:
+            unique_pdx = len(set(c.get('pdx_code') for c in st.session_state.history))
+            st.metric("Unique Diagnoses", unique_pdx)
+        
+        # Charts data prep
+        pdx_counts = {}
+        for case in st.session_state.history:
+            pdx = case.get('pdx_code', 'Unknown')
+            pdx_counts[pdx] = pdx_counts.get(pdx, 0) + 1
+        
+        st.markdown("### 🏆 Most Common PDx Codes")
+        top_pdx = sorted(pdx_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        for code, count in top_pdx:
+            percentage = count / len(st.session_state.history) * 100
+            st.markdown(f'''
+                <div style="display: flex; align-items: center; margin: 0.5rem 0;">
+                    <div style="width: 100px; font-family: monospace; color: #6366f1; font-weight: 600;">{code}</div>
+                    <div style="flex: 1; background: #1e293b; border-radius: 4px; height: 24px; overflow: hidden;">
+                        <div style="width: {percentage}%; background: linear-gradient(90deg, #6366f1, #ec4899); height: 100%; border-radius: 4px;"></div>
+                    </div>
+                    <div style="width: 60px; text-align: right; color: #94a3b8;">{count}</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        
+        # Export
         report_data = {
-            "report_date": datetime.now().strftime("%Y-%m-%d"),
+            "generated_at": datetime.now().isoformat(),
             "total_cases": len(st.session_state.history),
             "pdx_distribution": pdx_counts,
-            "confidence_distribution": confidence_counts,
-            "skilled_distribution": skilled_counts,
-            "corrections": st.session_state.corrections,
+            "corrections_made": len(st.session_state.corrections),
             "cases": st.session_state.history
         }
-
         st.download_button(
-            label="Download Monthly Report JSON",
-            data=json.dumps(report_data, indent=2),
-            file_name=f"monthly_report_{datetime.now().strftime('%Y%m')}.json",
-            mime="application/json"
+            "📥 Export Full Report",
+            json.dumps(report_data, indent=2),
+            f"carebridge_report_{datetime.now().strftime('%Y%m')}.json",
+            "application/json",
+            use_container_width=True
         )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with tab5:
-    st.subheader("How to Use CareBridge PDx Tool")
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">❓ Platform Guide</div>', unsafe_allow_html=True)
+    
     st.markdown("""
-    **Step 1 — Upload your documents**
-    - Upload one or multiple PDF discharge summaries at once
-    - Upload photos of documents
-    - Or paste clinical notes directly
-    - Tool combines all documents automatically
-
-    **Step 2 — Click Analyze**
-    - Tool automatically extracts all patient information
-    - Generates PDx and all secondary codes with PDGM value
-    - Shows confidence score for each analysis
-    - Identifies OASIS alerts and documentation gaps
-    - Creates physician query letters ready to send
-    - Identifies wound care, lab draw, therapy needs
-
-    **Step 3 — Review and correct**
-    - Check confidence score — red means review carefully
-    - Submit corrections using the feedback form
-    - Tool learns from your corrections for future cases
-
-    **Step 4 — Download reports**
-    - Download PDF report ready to print or send
-    - Download JSON for records
-    - Add cases to comparison for auditing
-
-    **Step 5 — Monthly Report**
-    - See all codes used this session
-    - Track most common diagnoses
-    - Monitor correction history
-    - Download full audit trail
-
-    **HIPAA Notice**
-    - Do not enter real patient names until HIPAA compliant hosting is configured
-    - Use initials only for now
-    - This tool uses NVIDIA API which is not HIPAA certified
-    - Contact us to upgrade to HIPAA compliant version
-
-    **Built in coding rules**
-    - ICD-10-CM FY2025 guidelines
-    - OASIS-E guidelines
-    - PDGM clinical grouping rules
-    - Home health specific coding requirements
-    - Learns from your corrections over time
+    ### 🚀 Getting Started
+    
+    **1. Document Upload**
+    - Drag & drop PDF discharge summaries
+    - Upload photos of documents (AI-powered OCR)
+    - Paste text directly from EHR
+    
+    **2. AI Analysis**
+    - Automatic patient data extraction
+    - Intelligent PDx suggestion with validation
+    - OASIS compliance checking
+    - PDGM grouping prediction
+    
+    **3. Review & Correct**
+    - Confidence scoring (High/Medium/Low)
+    - Auto-correction for common errors
+    - Submit corrections to improve AI
+    
+    **4. Export & Share**
+    - JSON for EHR integration
+    - PDF reports for physicians
+    - Case comparison for QA
+    
+    ### ⚡ Pro Tips
+    
+    - **High Confidence** = Green (ready to use)
+    - **Medium Confidence** = Yellow (quick review)
+    - **Low Confidence** = Red (detailed review needed)
+    
+    ### 🔒 Security Note
+    
+    This demo uses non-HIPAA infrastructure. For production use with PHI, contact us for HIPAA-compliant deployment.
     """)
+    st.markdown('</div>', unsafe_allow_html=True)
