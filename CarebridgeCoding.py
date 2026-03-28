@@ -15,9 +15,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from io import BytesIO
 import pandas as pd
 
-# Remove Windows-specific path - Streamlit Cloud has tesseract in PATH
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Common Files\DESIGNER\tesseract.exe"
-
 st.set_page_config(page_title="CareBridge PDx Tool", layout="wide")
 
 st.markdown("""
@@ -34,6 +31,7 @@ st.markdown("""
 .confidence-low {background: #f8d7da; border-left: 4px solid #dc3545; padding: 10px; border-radius: 5px; margin: 5px 0; font-weight: 700;}
 .section-header {font-size: 18px; font-weight: 600; color: #1a1a2e; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #0066cc; padding-bottom: 5px;}
 .correction-card {background: #e8f4fd; border-left: 4px solid #0066cc; padding: 15px; border-radius: 5px; margin: 10px 0;}
+.auto-correct {background: #fff3cd; border-left: 4px solid #ff6b35; padding: 10px; border-radius: 5px; margin: 10px 0; font-weight: 600;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -98,14 +96,80 @@ def build_corrections_context():
         context += f"- When documentation shows: {c['context']}, the correct PDx is {c['correct_code']} not {c['wrong_code']}. Reason: {c['reason']}\n"
     return context
 
+def validate_pdx_result(result, clinical_text):
+    """Validate and correct common PDx errors with clinical logic"""
+    
+    pdx = result.get('pdx_code', '')
+    pdx_desc = result.get('pdx_description', '')
+    text_lower = clinical_text.lower()
+    corrections_made = []
+    
+    # Rule 1: Aortoiliac/Aortobifemoral bypass cases
+    if 'aortoiliac' in text_lower or 'aortobifemoral' in text_lower or ('bypass' in text_lower and 'aorto' in text_lower):
+        if pdx in ['I70.201', 'I70.202', 'I70.203', 'I70.208', 'I70.209', 'I70.211', 'I70.212', 'I70.213', 'I70.218', 'I70.219']:
+            old_pdx = pdx
+            result['pdx_code'] = 'I74.5'
+            result['pdx_description'] = 'Embolism and thrombosis of iliac artery'
+            result['pdx_rationale'] = f'CORRECTED from {old_pdx}: Aortoiliac occlusion requiring bypass indicates acute thrombosis/embolism at the iliac level (I74.5), not chronic native artery disease of extremities (I70.2x). I70.2x codes are for femoral/popliteal/tibial disease below the inguinal ligament. The aortoiliac segment is coded with I74.x.'
+            result['confidence_score'] = 'High'
+            corrections_made.append(f'Auto-corrected: {old_pdx} → I74.5 (aortoiliac level disease requires I74.x, not I70.2x)')
+            
+            # Add the wrong code to alternative
+            if result.get('pdx_alternative') in [None, 'None', '']:
+                result['pdx_alternative'] = old_pdx
+    
+    # Rule 2: Z-codes cannot be PDx in home health
+    if pdx.startswith('Z'):
+        corrections_made.append(f'CRITICAL: Z-code {pdx} suggested as PDx - Z-codes cannot be primary in home health per CMS guidelines')
+        result['confidence_score'] = 'Low'
+    
+    # Rule 3: Symptom codes (R-codes) cannot be PDx
+    if pdx.startswith('R'):
+        corrections_made.append(f'CRITICAL: R-code {pdx} (symptom) suggested as PDx - symptoms cannot be primary unless no definitive diagnosis exists')
+        result['confidence_score'] = 'Low'
+    
+    # Rule 4: History codes (Z86-Z87, Z91.4-) cannot be PDx
+    if pdx.startswith('Z86') or pdx.startswith('Z87') or 'history' in pdx_desc.lower():
+        corrections_made.append(f'CRITICAL: History code {pdx} suggested as PDx - history codes cannot be primary')
+        result['confidence_score'] = 'Low'
+    
+    # Rule 5: Bilateral vs unilateral check
+    if 'bilateral' in text_lower or 'right and left' in text_lower:
+        if pdx.endswith('1') or pdx.endswith('2'):  # Right or left specific
+            corrections_made.append(f'WARNING: Unilateral code {pdx} used but documentation suggests bilateral disease - consider unspecified or bilateral code')
+    
+    # Rule 6: Post-operative status without complication
+    if 's/p' in text_lower or 'status post' in text_lower or 'post-operative' in text_lower:
+        if pdx.startswith('Z98'):
+            corrections_made.append(f'WARNING: Z98.x (post-procedural status) as PDx - code the condition that required surgery, not the post-op status')
+    
+    # Rule 7: Acute vs Chronic heart failure specificity
+    if pdx in ['I50.9', 'I50.20', 'I50.30', 'I50.40']:
+        if 'acute' in text_lower and 'chronic' in text_lower:
+            corrections_made.append(f'TIP: Consider acute on chronic HF code (3rd character = 3) instead of {pdx}')
+    
+    # Add corrections to warnings
+    if corrections_made:
+        result['coding_warnings'] = result.get('coding_warnings', []) + corrections_made
+    
+    # Ensure confidence is valid
+    if result.get('confidence_score') not in ['High', 'Medium', 'Low']:
+        result['confidence_score'] = 'Medium'
+    
+    return result
+
 def analyze_clinical_notes(clinical_text):
     corrections_context = build_corrections_context()
+    
+    # Escape clinical text to prevent JSON issues
+    safe_text = clinical_text.replace("\\", "\\\\").replace('"', '\\"')
 
     prompt = f"""You are an expert Home Health ICD-10-CM Coding Specialist for OASIS and 485 coding with deep knowledge of PDGM payment model and all CMS guidelines.
 
 Analyze this clinical documentation completely and return ONLY a valid JSON object with no markdown and no explanation.
 {corrections_context}
 
+JSON SCHEMA:
 {{
   "patient_name": "full name from document or Not found",
   "patient_dob": "date of birth or Not found",
@@ -119,7 +183,7 @@ Analyze this clinical documentation completely and return ONLY a valid JSON obje
   "qualifying_event": "exact qualifying event with date",
   "homebound_status": "specific evidence patient is homebound with quotes from notes",
   "change_in_condition": "specific symptoms and signs representing change in condition",
-  "pdx_code": "primary ICD-10-CM code with highest specificity",
+  "pdx_code": "primary ICD-10-CM code with highest specificity - MUST be definitive diagnosis",
   "pdx_description": "full official description of PDx code",
   "pdx_rationale": "detailed explanation of why this is correct PDx",
   "pdx_alternative": "alternative code if ambiguous or None",
@@ -132,10 +196,7 @@ Analyze this clinical documentation completely and return ONLY a valid JSON obje
     "specific physician query needed"
   ],
   "physician_query_letters": [
-    {{
-      "query_topic": "topic of query",
-      "query_letter": "complete ready to send physician query letter text"
-    }}
+    {{"query_topic": "topic of query", "query_letter": "complete ready to send physician query letter text"}}
   ],
   "wound_care": {{
     "present": "Yes or No",
@@ -195,35 +256,57 @@ Analyze this clinical documentation completely and return ONLY a valid JSON obje
   ]
 }}
 
-CRITICAL ICD-10-CM HOME HEALTH CODING RULES:
-- PDx must be definitive diagnosis never a symptom R-code never Z-code never history-of code
-- Never code possible suspected or rule-out diagnoses
-- Never code resolved conditions
-- Do not code symptoms integral to PDx like edema with HF or dyspnea with COPD
-- Use highest specificity with all required characters
-- HFpEF preserved EF = I50.3x diastolic. Systolic reduced EF = I50.2x. Combined = I50.4x
-- 5th character 1=acute 2=chronic 3=acute on chronic
-- Use I11.0 only if provider explicitly documents HTN caused HF
-- Troponin elevation do not code if provider says demand mismatch from CHF
-- Paroxysmal AFib = I48.0
-- Pulmonary hypertension group 2 = I27.22
-- Tricuspid regurgitation = I07.1
-- Morbid obesity = E66.01 plus Z68.4x for BMI
-- Sleep apnea do not code if only suspected
-- Change in condition must be symptoms signs not the diagnosis itself
+CRITICAL ICD-10-CM HOME HEALTH CODING RULES - YOU MUST FOLLOW:
+1. PDx must be definitive diagnosis - NEVER a symptom (R-code), NEVER a Z-code, NEVER history-of code
+2. For post-surgical vascular patients: Code the CONDITION that required surgery, NOT the post-op status
+3. For aortoiliac occlusion s/p bypass: Use I74.5 (Embolism/thrombosis of iliac artery) - NOT I70.2x
+4. I70.2x codes are for NATIVE arteries of EXTREMITIES (below inguinal ligament) - NOT for aortoiliac disease
+5. NEVER code possible, suspected, or rule-out diagnoses
+6. NEVER code resolved conditions
+7. Do NOT code symptoms integral to PDx
+8. Use highest specificity with all required characters
+9. Z-codes (Z95.828 for graft status) are SECONDARY codes only - NEVER primary
+
+ANATOMICAL CODING RULES:
+- Aorta and iliac arteries = I74.x (arterial embolism/thrombosis) or I77.x (other arterial disorders)
+- Femoral, popliteal, tibial, peroneal arteries = I70.2x (atherosclerosis) or I74.3-I74.5 (embolism)
+- Aortobifemoral bypass = I74.5 for the underlying occlusion
+- Peripheral artery disease (PAD) of extremities = I70.2xx series
 
 Clinical documentation:
-{clinical_text}
+{safe_text}
 
-Return ONLY valid JSON starting with open brace and ending with close brace."""
+Return ONLY valid JSON starting with open brace and ending with close brace. No markdown, no explanation."""
 
-    raw = call_api(prompt)
-    cleaned = re.sub(r'```json|```', '', raw).strip()
-    start = cleaned.find('{')
-    end = cleaned.rfind('}') + 1
-    if start != -1 and end > start:
+    try:
+        raw = call_api(prompt)
+        
+        # Clean response
+        cleaned = re.sub(r'```json|```', '', raw).strip()
+        
+        # Extract JSON
+        start = cleaned.find('{')
+        end = cleaned.rfind('}') + 1
+        if start == -1 or end <= start:
+            raise Exception("No valid JSON found in response")
+        
         cleaned = cleaned[start:end]
-    return json.loads(cleaned)
+        
+        # Parse JSON
+        result = json.loads(cleaned)
+        
+        # Post-processing validation with clinical logic
+        result = validate_pdx_result(result, clinical_text)
+        
+        return result
+        
+    except json.JSONDecodeError as e:
+        st.error(f"JSON parsing error: {str(e)}")
+        st.text("Raw response (first 2000 chars):")
+        st.text(raw[:2000])
+        raise Exception(f"Failed to parse API response: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Analysis failed: {str(e)}")
 
 def generate_pdf_report(result):
     buffer = BytesIO()
@@ -340,6 +423,12 @@ def generate_pdf_report(result):
     return buffer
 
 def render_results(result):
+    # Display auto-correction notice if present
+    warnings = result.get('coding_warnings', [])
+    auto_corrected = [w for w in warnings if 'Auto-corrected' in w or 'auto-corrected' in w.lower()]
+    if auto_corrected:
+        st.markdown('<div class="auto-correct">⚠️ ' + auto_corrected[0] + '</div>', unsafe_allow_html=True)
+    
     conf = result.get('confidence_score', 'Medium')
     conf_class = 'confidence-high' if conf == 'High' else 'confidence-low' if conf == 'Low' else 'confidence-medium'
     st.markdown(f'<div class="{conf_class}">Confidence: {conf} — {result.get("confidence_reason", "")}</div>', unsafe_allow_html=True)
@@ -435,10 +524,11 @@ def render_results(result):
         for gap in doc_gaps:
             st.markdown(f'<div class="warning-card">{gap}</div>', unsafe_allow_html=True)
 
-    warnings = result.get("coding_warnings", [])
-    if warnings:
+    # Display coding warnings (excluding auto-corrected which was shown at top)
+    other_warnings = [w for w in warnings if 'Auto-corrected' not in w and 'auto-corrected' not in w.lower()]
+    if other_warnings:
         st.markdown('<div class="section-header">Coding Warnings</div>', unsafe_allow_html=True)
-        for warning in warnings:
+        for warning in other_warnings:
             st.markdown(f'<div class="alert-card">{warning}</div>', unsafe_allow_html=True)
 
     st.markdown("---")
