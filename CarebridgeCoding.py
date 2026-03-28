@@ -20,10 +20,10 @@ st.set_page_config(
     page_title="CareBridge AI | Clinical Intelligence Platform",
     page_icon="🏥",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-# Premium CSS with Glassmorphism, Animations, and Modern Design
+# Premium CSS with Fixed Contrast and Visibility
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -37,11 +37,12 @@ st.markdown("""
     --warning: #f59e0b;
     --danger: #ef4444;
     --bg-dark: #0f172a;
-    --bg-card: rgba(30, 41, 59, 0.7);
-    --bg-glass: rgba(255, 255, 255, 0.03);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --border: rgba(148, 163, 184, 0.1);
+    --bg-card: rgba(30, 41, 59, 0.85);
+    --bg-glass: rgba(15, 23, 42, 0.6);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.2);
     --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     --glow: 0 0 40px rgba(99, 102, 241, 0.3);
 }
@@ -55,7 +56,7 @@ st.markdown("""
     background-attachment: fixed;
 }
 
-/* Animated Background Particles */
+/* Animated Background */
 .stApp::before {
     content: '';
     position: fixed;
@@ -73,7 +74,7 @@ st.markdown("""
 
 /* Glassmorphism Header */
 .main-header {
-    background: var(--bg-glass);
+    background: rgba(30, 41, 59, 0.9);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: 24px;
@@ -90,7 +91,7 @@ st.markdown("""
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 3px;
     background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
     animation: shimmer 3s infinite;
 }
@@ -117,9 +118,9 @@ st.markdown("""
     margin-top: 0.5rem;
 }
 
-/* Glass Cards */
+/* Glass Cards - FIXED VISIBILITY */
 .glass-card {
-    background: var(--bg-card);
+    background: rgba(30, 41, 59, 0.9);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -134,35 +135,24 @@ st.markdown("""
 .glass-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--glow), var(--shadow);
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.4);
 }
 
-.glass-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-    transition: left 0.5s;
-}
-
-.glass-card:hover::after {
-    left: 100%;
-}
-
-/* Section Headers */
+/* Section Headers - FIXED */
 .section-header {
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .section-header::before {
@@ -173,15 +163,16 @@ st.markdown("""
     border-radius: 2px;
 }
 
-/* PDx Code Display */
+/* PDx Display - ENHANCED VISIBILITY */
 .pdx-display {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 16px;
-    padding: 2rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(236, 72, 153, 0.3) 100%);
+    border: 2px solid rgba(99, 102, 241, 0.5);
+    border-radius: 20px;
+    padding: 2.5rem;
     text-align: center;
     position: relative;
     overflow: hidden;
+    margin-bottom: 1.5rem;
 }
 
 .pdx-display::before {
@@ -191,7 +182,7 @@ st.markdown("""
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
     animation: pulse 4s ease-in-out infinite;
 }
 
@@ -202,65 +193,61 @@ st.markdown("""
 
 .pdx-code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.8), 0 0 60px rgba(99, 102, 241, 0.4);
     position: relative;
     z-index: 1;
+    letter-spacing: -0.02em;
 }
 
 .pdx-description {
     font-size: 1.25rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
+    color: var(--text-primary);
+    margin-top: 0.75rem;
+    font-weight: 500;
     position: relative;
     z-index: 1;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Confidence Indicators */
+/* Confidence Badges - FIXED */
 .confidence-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 9999px;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    color: #ffffff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .confidence-high {
-    background: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    border: 2px solid #34d399;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .confidence-medium {
-    background: rgba(245, 158, 11, 0.2);
-    color: #fbbf24;
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    border: 2px solid #fbbf24;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .confidence-low {
-    background: rgba(239, 68, 68, 0.2);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border: 2px solid #f87171;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
-/* Status Cards */
-.status-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
+/* Status Items - FIXED VISIBILITY */
 .status-item {
-    background: var(--bg-glass);
+    background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 1rem;
@@ -268,27 +255,25 @@ st.markdown("""
     align-items: center;
     gap: 1rem;
     transition: all 0.2s;
+    margin-bottom: 0.75rem;
 }
 
 .status-item:hover {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.4);
 }
 
 .status-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
 }
-
-.status-icon.info { background: rgba(6, 182, 212, 0.2); }
-.status-icon.success { background: rgba(16, 185, 129, 0.2); }
-.status-icon.warning { background: rgba(245, 158, 11, 0.2); }
-.status-icon.danger { background: rgba(239, 68, 68, 0.2); }
 
 .status-content {
     flex: 1;
@@ -296,89 +281,98 @@ st.markdown("""
 
 .status-label {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
 .status-value {
-    font-size: 0.9375rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Alert Cards - FIXED */
+.alert-card {
+    background: rgba(239, 68, 68, 0.15);
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
     color: var(--text-primary);
     font-weight: 500;
 }
 
-/* Alert Cards */
-.alert-card {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 12px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-}
-
 .alert-card::before {
     content: '⚠️';
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+    flex-shrink: 0;
 }
 
 .warning-card {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.15);
+    border: 2px solid rgba(245, 158, 11, 0.4);
     border-radius: 12px;
-    padding: 1rem;
-    margin: 0.5rem 0;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .info-card {
-    background: rgba(6, 182, 212, 0.1);
-    border: 1px solid rgba(6, 182, 212, 0.3);
+    background: rgba(6, 182, 212, 0.15);
+    border: 2px solid rgba(6, 182, 212, 0.4);
     border-radius: 12px;
-    padding: 1rem;
-    margin: 0.5rem 0;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .success-card {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.15);
+    border: 2px solid rgba(16, 185, 129, 0.4);
     border-radius: 12px;
-    padding: 1rem;
-    margin: 0.5rem 0;
+    padding: 1.25rem;
+    margin: 0.75rem 0;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
-/* Secondary Codes */
-.code-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
+/* Code Items - FIXED */
 .code-item {
-    background: var(--bg-glass);
+    background: rgba(15, 23, 42, 0.7);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1rem;
+    padding: 1.25rem;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     transition: all 0.2s;
+    margin-bottom: 0.75rem;
 }
 
 .code-item:hover {
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.5);
     transform: translateX(4px);
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .code-number {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    flex-shrink: 0;
 }
 
 .code-details {
@@ -388,213 +382,114 @@ st.markdown("""
 
 .code-title {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
 }
 
 .code-rationale {
     color: var(--text-secondary);
     font-size: 0.875rem;
+    line-height: 1.5;
 }
 
-/* Auto-correction Notice */
+/* Auto-correction Notice - FIXED */
 .auto-correct {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(239, 68, 68, 0.2) 100%);
-    border: 1px solid rgba(245, 158, 11, 0.4);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(239, 68, 68, 0.25) 100%);
+    border: 2px solid rgba(245, 158, 11, 0.5);
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     animation: slideIn 0.5s ease-out;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1rem;
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Buttons */
-.stButton > button {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 12px !important;
-    padding: 0.875rem 1.5rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.025em !important;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
-    transition: all 0.3s !important;
-    position: relative !important;
-    overflow: hidden !important;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
-}
-
-.stButton > button:active {
-    transform: translateY(0) !important;
-}
-
-.stButton > button:disabled {
-    opacity: 0.5 !important;
-    cursor: not-allowed !important;
-}
-
-/* File Uploader */
-.stFileUploader {
-    background: var(--bg-glass);
-    border: 2px dashed var(--border);
-    border-radius: 16px;
+/* Interactive Correction Panel - NEW */
+.correction-panel {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%);
+    border: 2px solid rgba(99, 102, 241, 0.4);
+    border-radius: 20px;
     padding: 2rem;
-    text-align: center;
-    transition: all 0.3s;
+    margin-top: 2rem;
+    position: relative;
 }
 
-.stFileUploader:hover {
-    border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.05);
+.correction-panel::before {
+    content: '✏️ LIVE CORRECTION';
+    position: absolute;
+    top: -12px;
+    left: 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
 }
 
-/* Tabs */
-.stTabs [data-baseweb="tab-list"] {
-    background: var(--bg-glass);
+.correction-history {
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 12px;
-    padding: 0.5rem;
-    gap: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-.stTabs [data-baseweb="tab"] {
-    background: transparent;
+.correction-item {
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 4px solid var(--primary);
     border-radius: 8px;
-    color: var(--text-secondary);
-    font-weight: 500;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
     transition: all 0.2s;
 }
 
-.stTabs [aria-selected="true"] {
-    background: var(--primary) !important;
-    color: white !important;
+.correction-item:hover {
+    background: rgba(99, 102, 241, 0.2);
+    transform: translateX(4px);
 }
 
-/* Expander */
-.streamlit-expanderHeader {
-    background: var(--bg-glass);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    font-weight: 500;
+.correction-item .code-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
 }
 
-/* Text Areas */
-.stTextArea textarea {
-    background: var(--bg-glass);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
+.correction-item .code-change .arrow {
+    color: var(--secondary);
+    margin: 0 0.5rem;
 }
 
-.stTextArea textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+.correction-item .meta {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
 }
 
-/* Input Fields */
-.stTextInput input {
-    background: var(--bg-glass);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-primary);
-}
-
-/* Metrics */
-[data-testid="stMetricValue"] {
-    font-size: 2rem !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-}
-
-[data-testid="stMetricLabel"] {
-    color: var(--text-secondary) !important;
-    font-size: 0.875rem !important;
-}
-
-/* Download Buttons */
-.stDownloadButton button {
-    background: var(--bg-glass) !important;
-    border: 1px solid var(--border) !important;
-    color: var(--text-primary) !important;
-    border-radius: 10px !important;
-    transition: all 0.2s !important;
-}
-
-.stDownloadButton button:hover {
-    background: rgba(99, 102, 241, 0.1) !important;
-    border-color: var(--primary) !important;
-}
-
-/* Loading Spinner */
-.stSpinner > div {
-    border-color: var(--primary) !important;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-/* Hide Streamlit Elements */
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-
-/* Animation for new elements */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-in {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-/* Query Cards */
+/* Query Cards - FIXED */
 .query-card {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
+    border: 2px solid rgba(239, 68, 68, 0.3);
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 1.5rem;
     margin: 0.75rem 0;
     position: relative;
     overflow: hidden;
+    color: var(--text-primary);
+    font-weight: 500;
 }
 
 .query-card::before {
@@ -603,60 +498,172 @@ header {visibility: hidden;}
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.5rem;
-    opacity: 0.3;
+    font-size: 2rem;
+    opacity: 0.2;
 }
 
-/* Correction Form */
-.correction-form {
-    background: var(--bg-glass);
-    border: 1px solid var(--border);
+/* Sidebar - NEW INTERACTIVE SPACE */
+.css-1d391kg, .css-163ttbj, [data-testid="stSidebar"] {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border-right: 1px solid var(--border);
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Buttons - ENHANCED */
+.stButton > button {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 0.875rem 1.5rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.025em !important;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+    transition: all 0.3s !important;
+    position: relative !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+}
+
+/* Form Elements - FIXED */
+.stTextInput input, .stTextArea textarea, .stSelectbox select {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 2px solid var(--border) !important;
+    border-radius: 10px !important;
+    color: var(--text-primary) !important;
+    font-weight: 500 !important;
+}
+
+.stTextInput input:focus, .stTextArea textarea:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Expander - FIXED */
+.streamlit-expanderHeader {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Tabs - FIXED */
+.stTabs [data-baseweb="tab-list"] {
+    background: rgba(15, 23, 42, 0.6) !important;
+    border-radius: 12px !important;
+    padding: 0.5rem !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
+
+/* Metrics - FIXED */
+[data-testid="stMetricValue"] {
+    font-size: 2.5rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* Hide Streamlit Elements */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Animation */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Comparison Cards */
+.comparison-card {
+    background: rgba(15, 23, 42, 0.8);
     border-radius: 16px;
     padding: 1.5rem;
-    margin-top: 1rem;
+    border: 2px solid var(--border);
+    color: var(--text-primary);
+}
+
+.comparison-card.highlight {
+    border-color: var(--primary);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
 }
 
 /* History Items */
 .history-item {
-    background: var(--bg-glass);
+    background: rgba(15, 23, 42, 0.6);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1rem;
+    padding: 1.25rem;
     margin: 0.5rem 0;
     transition: all 0.2s;
     cursor: pointer;
+    color: var(--text-primary);
 }
 
 .history-item:hover {
     border-color: var(--primary);
     transform: translateX(4px);
-}
-
-/* Comparison View */
-.comparison-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-.comparison-card {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-}
-
-.comparison-card.highlight {
-    border-color: var(--primary);
-    box-shadow: var(--glow);
+    background: rgba(99, 102, 241, 0.1);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .logo-text { font-size: 1.75rem; }
-    .pdx-code { font-size: 2rem; }
-    .status-grid { grid-template-columns: 1fr; }
-    .comparison-grid { grid-template-columns: 1fr; }
+    .pdx-code { font-size: 2.5rem; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -673,6 +680,8 @@ if "current_result" not in st.session_state:
     st.session_state.current_result = None
 if "comparison_cases" not in st.session_state:
     st.session_state.comparison_cases = []
+if "show_correction_panel" not in st.session_state:
+    st.session_state.show_correction_panel = False
 
 def call_api(prompt):
     headers = {
@@ -718,7 +727,7 @@ def build_corrections_context():
     if not st.session_state.corrections:
         return ""
     context = "\n\nLEARNED CORRECTIONS FROM PREVIOUS CASES - APPLY THESE:\n"
-    for c in st.session_state.corrections:
+    for c in st.session_state.corrections[-10:]:  # Last 10 corrections
         context += f"- When documentation shows: {c['context']}, the correct PDx is {c['correct_code']} not {c['wrong_code']}. Reason: {c['reason']}\n"
     return context
 
@@ -762,11 +771,6 @@ def validate_pdx_result(result, clinical_text):
     if 'bilateral' in text_lower or 'right and left' in text_lower:
         if pdx.endswith('1') or pdx.endswith('2'):
             corrections_made.append(f'WARNING: Unilateral code {pdx} used but documentation suggests bilateral disease - consider unspecified or bilateral code')
-    
-    # Rule 6: Post-operative status without complication
-    if 's/p' in text_lower or 'status post' in text_lower or 'post-operative' in text_lower:
-        if pdx.startswith('Z98'):
-            corrections_made.append(f'WARNING: Z98.x (post-procedural status) as PDx - code the condition that required surgery, not the post-op status')
     
     # Add corrections to warnings
     if corrections_made:
@@ -1053,12 +1057,12 @@ def render_results(result):
     ''', unsafe_allow_html=True)
     
     # Rationale
-    with st.expander("View Rationale", expanded=True):
+    with st.expander("📖 View Rationale", expanded=True):
         st.markdown(f'<div class="info-card">{result.get("pdx_rationale", "No rationale provided")}</div>', unsafe_allow_html=True)
     
     # Alternative PDx
     if result.get("pdx_alternative") and result.get("pdx_alternative") != "None":
-        st.markdown(f'<div class="warning-card"><strong>Alternative Consideration:</strong> {result.get("pdx_alternative")}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="warning-card"><strong>🔄 Alternative Consideration:</strong> {result.get("pdx_alternative")}</div>', unsafe_allow_html=True)
     
     # Patient Info Grid
     st.markdown('<div class="section-header">👤 Patient Information</div>', unsafe_allow_html=True)
@@ -1067,7 +1071,7 @@ def render_results(result):
     with col1:
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon info">👤</div>
+                <div class="status-icon">👤</div>
                 <div class="status-content">
                     <div class="status-label">Patient</div>
                     <div class="status-value">{result.get("patient_name", "Not found")}</div>
@@ -1076,7 +1080,7 @@ def render_results(result):
         ''', unsafe_allow_html=True)
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon info">🎂</div>
+                <div class="status-icon">🎂</div>
                 <div class="status-content">
                     <div class="status-label">DOB / Age</div>
                     <div class="status-value">{result.get("patient_dob", "—")} ({result.get("patient_age", "—")})</div>
@@ -1087,7 +1091,7 @@ def render_results(result):
     with col2:
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon success">🏥</div>
+                <div class="status-icon">🏥</div>
                 <div class="status-content">
                     <div class="status-label">Admission</div>
                     <div class="status-value">{result.get("admission_date", "—")}</div>
@@ -1096,7 +1100,7 @@ def render_results(result):
         ''', unsafe_allow_html=True)
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon success">✅</div>
+                <div class="status-icon">✅</div>
                 <div class="status-content">
                     <div class="status-label">Discharge</div>
                     <div class="status-value">{result.get("discharge_date", "—")}</div>
@@ -1107,7 +1111,7 @@ def render_results(result):
     with col3:
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon warning">📋</div>
+                <div class="status-icon">📋</div>
                 <div class="status-content">
                     <div class="status-label">F2F Date</div>
                     <div class="status-value">{result.get("face_to_face_date", "Not found")}</div>
@@ -1116,7 +1120,7 @@ def render_results(result):
         ''', unsafe_allow_html=True)
         st.markdown(f'''
             <div class="status-item">
-                <div class="status-icon info">👨‍⚕️</div>
+                <div class="status-icon">👨‍⚕️</div>
                 <div class="status-content">
                     <div class="status-label">Attending</div>
                     <div class="status-value">{result.get("attending_physician", "—")}</div>
@@ -1276,28 +1280,54 @@ def render_results(result):
         for warning in other_warnings:
             st.markdown(f'<div class="alert-card">{warning}</div>', unsafe_allow_html=True)
     
-    # Correction Form
-    st.markdown('<div class="section-header">✏️ Submit Correction</div>', unsafe_allow_html=True)
-    st.markdown('<div class="correction-form">', unsafe_allow_html=True)
-    with st.form(key="correction_form"):
-        col1, col2 = st.columns(2)
-        with col1:
-            wrong_code = st.text_input("Suggested Code (Wrong)", value=result.get('pdx_code', ''))
-        with col2:
-            correct_code = st.text_input("Correct Code")
-        correction_context = st.text_area("Reason for Correction", height=100, placeholder="Explain why this correction is needed...")
-        submitted = st.form_submit_button("💾 Save Correction", use_container_width=True)
-        if submitted and correct_code:
-            correction = {
-                "wrong_code": wrong_code,
-                "correct_code": correct_code,
-                "context": correction_context or f"Patient with {result.get('pdx_description', '')}",
-                "reason": correction_context or "Coder correction",
-                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "patient": result.get('patient_name', 'Unknown')
-            }
-            st.session_state.corrections.append(correction)
-            st.success(f"✅ Correction saved! Tool will use {correct_code} for similar cases.")
+    # Interactive Correction Panel
+    st.markdown('<div class="correction-panel">', unsafe_allow_html=True)
+    st.markdown("### ✏️ Is this PDx correct? Help me learn!")
+    
+    col_corr1, col_corr2 = st.columns(2)
+    with col_corr1:
+        wrong_code = st.text_input("Current Suggested Code", value=result.get('pdx_code', ''), key="wrong_code_input")
+    with col_corr2:
+        correct_code = st.text_input("Your Corrected Code", placeholder="Enter correct ICD-10 code...", key="correct_code_input")
+    
+    correction_reason = st.text_area("Why is this correction needed?", placeholder="Explain the clinical reasoning...", height=100, key="correction_reason")
+    
+    col_save, col_cancel = st.columns([1, 4])
+    with col_save:
+        if st.button("💾 Save Correction", use_container_width=True, type="primary"):
+            if correct_code:
+                correction = {
+                    "wrong_code": wrong_code,
+                    "correct_code": correct_code,
+                    "context": result.get('pdx_description', ''),
+                    "reason": correction_reason or "Clinical correction",
+                    "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "patient": result.get('patient_name', 'Unknown'),
+                    "clinical_text": result.get('change_in_condition', '')[:200]
+                }
+                st.session_state.corrections.append(correction)
+                st.success(f"✅ Saved! I'll remember that {correct_code} is correct for similar cases.")
+                st.balloons()
+            else:
+                st.warning("Please enter the correct code")
+    
+    # Show recent corrections for this case type
+    if st.session_state.corrections:
+        st.markdown("#### 🧠 Recently Learned Corrections")
+        st.markdown('<div class="correction-history">', unsafe_allow_html=True)
+        for corr in reversed(st.session_state.corrections[-5:]):
+            st.markdown(f'''
+                <div class="correction-item">
+                    <div class="code-change">
+                        <span style="color: #ef4444;">{corr['wrong_code']}</span>
+                        <span class="arrow">→</span>
+                        <span style="color: #10b981;">{corr['correct_code']}</span>
+                    </div>
+                    <div class="meta">{corr['date']} • {corr['patient']} • {corr['reason'][:60]}...</div>
+                </div>
+            ''', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Download Buttons
@@ -1341,7 +1371,66 @@ st.markdown('''
     </div>
 ''', unsafe_allow_html=True)
 
-# Main Tabs with Premium Styling
+# Sidebar - Interactive Learning Hub
+with st.sidebar:
+    st.markdown('<div class="sidebar-title">🎓 Learning Hub</div>', unsafe_allow_html=True)
+    
+    # Quick stats
+    st.metric("Cases Analyzed", len(st.session_state.history))
+    st.metric("Corrections Made", len(st.session_state.corrections))
+    
+    st.markdown("---")
+    
+    # Quick correction from sidebar
+    st.markdown("### ⚡ Quick Fix")
+    st.markdown("If the AI got it wrong, fix it here:")
+    
+    quick_wrong = st.text_input("Wrong Code", placeholder="e.g., I70.201", key="quick_wrong")
+    quick_right = st.text_input("Right Code", placeholder="e.g., I74.5", key="quick_right")
+    quick_reason = st.text_area("Reason", placeholder="Why this is wrong...", height=80, key="quick_reason")
+    
+    if st.button("🚀 Submit Correction", use_container_width=True):
+        if quick_wrong and quick_right:
+            correction = {
+                "wrong_code": quick_wrong,
+                "correct_code": quick_right,
+                "context": "Manual sidebar correction",
+                "reason": quick_reason or "Quick fix",
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "patient": "Manual entry"
+            }
+            st.session_state.corrections.append(correction)
+            st.success("✅ Correction saved!")
+        else:
+            st.warning("Enter both codes")
+    
+    st.markdown("---")
+    
+    # Learning progress
+    if st.session_state.corrections:
+        st.markdown("### 📚 Learning Progress")
+        st.markdown(f"**{len(st.session_state.corrections)}** corrections taught")
+        
+        # Most corrected codes
+        from collections import Counter
+        wrong_codes = [c['wrong_code'] for c in st.session_state.corrections]
+        top_mistakes = Counter(wrong_codes).most_common(3)
+        
+        st.markdown("**Common AI Mistakes:**")
+        for code, count in top_mistakes:
+            st.markdown(f"- `{code}` ({count}x)")
+    
+    st.markdown("---")
+    st.markdown("### 🎯 Tips")
+    st.info("""
+    • Green = High confidence  
+    • Yellow = Review suggested  
+    • Red = Manual review required  
+    
+    Always verify PDx before finalizing!
+    """)
+
+# Main Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔄 New Analysis", "📚 Case History", "⚖️ Compare Cases", "📊 Analytics", "❓ Help"])
 
 with tab1:
@@ -1407,9 +1496,9 @@ with tab1:
             render_results(st.session_state.current_result)
         else:
             st.markdown('''
-                <div style="text-align: center; padding: 4rem 2rem; color: #64748b;">
+                <div style="text-align: center; padding: 4rem 2rem; color: #94a3b8;">
                     <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
-                    <h3>Ready to Analyze</h3>
+                    <h3 style="color: #f1f5f9; margin-bottom: 0.5rem;">Ready to Analyze</h3>
                     <p>Upload documents or paste clinical notes to begin AI-powered coding analysis</p>
                 </div>
             ''', unsafe_allow_html=True)
@@ -1431,7 +1520,7 @@ with tab2:
                 search_term.lower() in c.get('pdx_code', '').lower() or
                 search_term.lower() in c.get('analyzed_at', '').lower()]
         
-        st.markdown(f'<p style="color: #64748b; margin-bottom: 1rem;">Showing {len(filtered)} of {len(st.session_state.history)} cases</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; margin-bottom: 1rem;">Showing {len(filtered)} of {len(st.session_state.history)} cases</p>', unsafe_allow_html=True)
         
         for i, case in enumerate(reversed(filtered)):
             with st.expander(f"{case.get('patient_name', 'Unknown')} — {case.get('pdx_code', '')} — {case.get('analyzed_at', '')}"):
@@ -1469,7 +1558,7 @@ with tab3:
     if len(st.session_state.comparison_cases) < 2:
         st.info("Add at least 2 cases to comparison from the analysis results.")
         if st.session_state.comparison_cases:
-            st.markdown(f'<p>Currently have {len(st.session_state.comparison_cases)} case(s) queued</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="color: #94a3b8;">Currently have {len(st.session_state.comparison_cases)} case(s) queued</p>', unsafe_allow_html=True)
     else:
         case_a = st.session_state.comparison_cases[-2]
         case_b = st.session_state.comparison_cases[-1]
@@ -1479,26 +1568,26 @@ with tab3:
         with col_a:
             st.markdown(f'''
                 <div class="comparison-card">
-                    <h4>Case A: {case_a.get('patient_name', 'Unknown')}</h4>
-                    <div class="pdx-code" style="font-size: 1.5rem;">{case_a.get('pdx_code', '')}</div>
-                    <p>{case_a.get('pdx_description', '')}</p>
+                    <h4 style="color: #f1f5f9; margin-bottom: 1rem;">Case A: {case_a.get('patient_name', 'Unknown')}</h4>
+                    <div class="pdx-code" style="font-size: 1.5rem; margin-bottom: 0.5rem;">{case_a.get('pdx_code', '')}</div>
+                    <p style="color: #cbd5e1;">{case_a.get('pdx_description', '')}</p>
                     <hr style="border-color: #334155; margin: 1rem 0;">
-                    <p><strong>Confidence:</strong> {case_a.get('confidence_score', '')}</p>
-                    <p><strong>Date:</strong> {case_a.get('analyzed_at', '')}</p>
-                    <p><strong>Event:</strong> {case_a.get('qualifying_event', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Confidence:</strong> {case_a.get('confidence_score', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Date:</strong> {case_a.get('analyzed_at', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Event:</strong> {case_a.get('qualifying_event', '')}</p>
                 </div>
             ''', unsafe_allow_html=True)
         
         with col_b:
             st.markdown(f'''
                 <div class="comparison-card highlight">
-                    <h4>Case B: {case_b.get('patient_name', 'Unknown')}</h4>
-                    <div class="pdx-code" style="font-size: 1.5rem;">{case_b.get('pdx_code', '')}</div>
-                    <p>{case_b.get('pdx_description', '')}</p>
+                    <h4 style="color: #f1f5f9; margin-bottom: 1rem;">Case B: {case_b.get('patient_name', 'Unknown')}</h4>
+                    <div class="pdx-code" style="font-size: 1.5rem; margin-bottom: 0.5rem;">{case_b.get('pdx_code', '')}</div>
+                    <p style="color: #cbd5e1;">{case_b.get('pdx_description', '')}</p>
                     <hr style="border-color: #334155; margin: 1rem 0;">
-                    <p><strong>Confidence:</strong> {case_b.get('confidence_score', '')}</p>
-                    <p><strong>Date:</strong> {case_b.get('analyzed_at', '')}</p>
-                    <p><strong>Event:</strong> {case_b.get('qualifying_event', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Confidence:</strong> {case_b.get('confidence_score', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Date:</strong> {case_b.get('analyzed_at', '')}</p>
+                    <p style="color: #94a3b8;"><strong style="color: #f1f5f9;">Event:</strong> {case_b.get('qualifying_event', '')}</p>
                 </div>
             ''', unsafe_allow_html=True)
         
@@ -1539,11 +1628,11 @@ with tab4:
             percentage = count / len(st.session_state.history) * 100
             st.markdown(f'''
                 <div style="display: flex; align-items: center; margin: 0.5rem 0;">
-                    <div style="width: 100px; font-family: monospace; color: #6366f1; font-weight: 600;">{code}</div>
+                    <div style="width: 100px; font-family: monospace; color: #6366f1; font-weight: 700;">{code}</div>
                     <div style="flex: 1; background: #1e293b; border-radius: 4px; height: 24px; overflow: hidden;">
                         <div style="width: {percentage}%; background: linear-gradient(90deg, #6366f1, #ec4899); height: 100%; border-radius: 4px;"></div>
                     </div>
-                    <div style="width: 60px; text-align: right; color: #94a3b8;">{count}</div>
+                    <div style="width: 60px; text-align: right; color: #94a3b8; font-weight: 600;">{count}</div>
                 </div>
             ''', unsafe_allow_html=True)
         
